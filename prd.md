@@ -88,16 +88,28 @@ Area Stage 10 (Summit) dirancang netral secara default, dengan opsi personalisas
 4. Server mengirimkan sinyal hanya ke pemain terkait via `RemoteEvent:FireClient`.
 5. `SummitController` (Client) memicu selebrasi lokal (banner, FX, audio) hanya pada layar pemain tersebut tanpa mengganggu pemain lain.
 
-### B. Kontrak Konfigurasi Modular (`SummitConfig.luau`)
+### B. Desain Suasana Puncak Meriah (Festive Summit Atmosphere)
+Untuk menciptakan suasana hangat dan selebrasi di area puncak tanpa membebani performa mobile:
+1. **Dekorasi Visual Plaza**:
+   - Plaza puncak melingkar (diameter/lebar 48x48 studs) berpagar taman marmer halus.
+   - Tiang lentera hangat di sekeliling plaza untuk pencahayaan lembut.
+   - Gazebo / panggung selebrasi beratap kubah pastel di tengah plaza dengan spot foto berlatar awan.
+   - Partikel konfeti lembut melayang perlahan di udara saat selebrasi aktif.
+2. **Perayaan Interaktif (Client-Only)**:
+   - Efek kembang api warna-warni meluncur ke langit selama 5 detik setelah pemain menginjak zona finish.
+   - Banner selebrasi ramah mobile dengan teks sambutan ceria dan tombol "Replay Selebrasi".
+   - Seluruh efek dirancang per-pemain sehingga tidak membuat lag atau mengganggu pemain lain yang sedang berada di area puncak.
+
+### C. Kontrak Konfigurasi Modular (`SummitConfig.luau`)
 ```luau
 local SummitConfig = {
     SchemaVersion = 1,
-    PresetId = "Neutral", -- "Neutral" (Default) | "Birthday" | "Custom"
+    PresetId = "Festive", -- "Neutral" | "Festive" (Meriah) | "Birthday"
 
     Core = {
         Enabled = true,
-        BannerTitle = "Puncak Tercapai!",
-        BannerSubtitle = "Selamat! Kamu telah menaklukkan seluruh pulau langit.",
+        BannerTitle = "Selamat Datang di Puncak Awan!",
+        BannerSubtitle = "Luar biasa! Kamu berhasil menaklukkan seluruh rintangan pulau langit.",
         BannerDurationSeconds = 5,
         FinishZoneName = "SummitFinishZone",
     },
@@ -114,12 +126,12 @@ local SummitConfig = {
             AnchorId = "DecorationAnchor",
         },
         Confetti = {
-            Enabled = false,
-            DurationSeconds = 4,
+            Enabled = true,          -- Mode meriah: konfeti aktif saat finish
+            DurationSeconds = 5,
             MaxLiveParticles = 80,
         },
         Fireworks = {
-            Enabled = false,
+            Enabled = true,          -- Mode meriah: kembang api aktif
             DurationSeconds = 5,
             AnchorId = "FireworksAnchor",
         },
