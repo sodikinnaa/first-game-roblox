@@ -28,6 +28,13 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install Luau test runtime
+        run: |
+          mkdir -p build/tools
+          curl -fLsS https://github.com/luau-lang/luau/releases/download/0.742/luau-ubuntu.zip -o build/tools/luau.zip
+          unzip -q build/tools/luau.zip -d build/tools
+          chmod +x build/tools/luau build/tools/luau-compile
+
       - name: Run Mechanics Unit Tests
         run: |
           python -m unittest discover -s tests -p "test_*.py" -v

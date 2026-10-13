@@ -10,3 +10,5 @@ dist/
 build/
 .hermes/
 scratch/
+__pycache__/
+*.pyc
