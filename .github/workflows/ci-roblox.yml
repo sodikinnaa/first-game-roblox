@@ -6,6 +6,14 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish to Roblox and replace the configured place
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -25,9 +33,9 @@ jobs:
           python -m unittest discover -s tests -p "test_*.py" -v
 
   build-and-publish:
-    name: Build & Publish Place (Manual / Tagged)
+    name: Build Place (Publish Optional)
     needs: test
-    if: github.event_name == 'workflow_dispatch'
+
     runs-on: ubuntu-latest
     environment: roblox
     steps:
@@ -36,8 +44,8 @@ jobs:
 
       - name: Install Rojo Binary
         run: |
-          ROJO_VERSION="7.4.4"
-          curl -sSL "https://github.com/rojo-rbx/rojo/releases/download/v${ROJO_VERSION}/rojo-v${ROJO_VERSION}-linux-x86_64.zip" -o rojo.zip
+          ROJO_VERSION="7.7.1"
+          curl -fLsS "https://github.com/rojo-rbx/rojo/releases/download/v${ROJO_VERSION}/rojo-${ROJO_VERSION}-linux-x86_64.zip" -o rojo.zip
           unzip -q rojo.zip
           chmod +x rojo
           sudo mv rojo /usr/local/bin/rojo
@@ -48,9 +56,14 @@ jobs:
           rojo build default.project.json --output AI_Obby_Adventure.rbxl
 
       - name: Publish to Roblox Open Cloud
+        if: github.event_name == 'workflow_dispatch' && inputs.publish
+        env:
+          ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}
+          UNIVERSE_ID: ${{ secrets.UNIVERSE_ID }}
+          PLACE_ID: ${{ secrets.PLACE_ID }}
         run: |
           curl --fail --show-error --location \
-            --request POST "https://apis.roblox.com/universes/v1/${{ secrets.UNIVERSE_ID }}/places/${{ secrets.PLACE_ID }}/versions?versionType=Published" \
-            --header "x-api-key: ${{ secrets.ROBLOX_API_KEY }}" \
+            --request POST "https://apis.roblox.com/universes/v1/$UNIVERSE_ID/places/$PLACE_ID/versions?versionType=Published" \
+            --header "x-api-key: $ROBLOX_API_KEY" \
             --header "Content-Type: application/octet-stream" \
             --data-binary @AI_Obby_Adventure.rbxl

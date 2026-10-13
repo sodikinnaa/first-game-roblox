@@ -17,13 +17,13 @@ roblox-game/
 │   ├── shared/                    # ReplicatedStorage (Shared)
 │   │   └── GameConfig.luau        # Konfigurasi reward, koin, stage
 │   ├── server/                    # ServerScriptService (Backend)
-│   │   ├── init.server.luau       # Entry point server
+│   │   ├── Main.server.luau       # Entry point server
 │   │   └── services/
 │   │       ├── LeaderboardService.luau  # State management Stage & Coins
 │   │       ├── CheckpointService.luau   # Respawn & progression handler
 │   │       └── ObstacleService.luau     # KillBrick collision & traps
 │   └── client/                    # StarterPlayerScripts (Frontend)
-│       ├── init.client.luau       # Entry point client
+│       ├── Main.client.luau       # Entry point client
 │       └── controllers/
 │           └── HUDController.luau # Visual overlay HUD (Stage & Coins)
 └── tests/

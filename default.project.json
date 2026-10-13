@@ -5,7 +5,7 @@
     "ServerScriptService": {
       "$className": "ServerScriptService",
       "ServerMain": {
-        "$path": "src/server/init.server.luau"
+        "$path": "src/server/Main.server.luau"
       },
       "Services": {
         "$path": "src/server/services"
@@ -22,7 +22,7 @@
       "StarterPlayerScripts": {
         "$className": "StarterPlayerScripts",
         "ClientMain": {
-          "$path": "src/client/init.client.luau"
+          "$path": "src/client/Main.client.luau"
         },
         "Controllers": {
           "$path": "src/client/controllers"
