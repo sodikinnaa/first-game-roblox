@@ -1,0 +1,12 @@
+# Environment variables & secrets
+.env
+*.env
+.env.*
+
+# Build artifacts & temp
+*.rbxl
+*.rbxlx
+dist/
+build/
+.hermes/
+scratch/

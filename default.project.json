@@ -1,0 +1,33 @@
+{
+  "name": "AI Obby Adventure",
+  "tree": {
+    "$className": "DataModel",
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "ServerMain": {
+        "$path": "src/server/init.server.luau"
+      },
+      "Services": {
+        "$path": "src/server/services"
+      }
+    },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Common": {
+        "$path": "src/shared"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "ClientMain": {
+          "$path": "src/client/init.client.luau"
+        },
+        "Controllers": {
+          "$path": "src/client/controllers"
+        }
+      }
+    }
+  }
+}

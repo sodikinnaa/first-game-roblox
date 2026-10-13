@@ -1,0 +1,52 @@
+name: CI & Build Roblox Place
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run Mechanics Unit Tests
+        run: |
+          python -m unittest discover -s tests -p "test_*.py" -v
+
+  build-and-publish:
+    name: Build & Publish Place (Manual / Tagged)
+    needs: test
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: roblox
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rojo
+        uses: rojo-rbx/setup-rojo@v1
+        with:
+          version: 7.4.4
+
+      - name: Build Place (.rbxl)
+        run: |
+          rojo build default.project.json --output AI_Obby_Adventure.rbxl
+
+      - name: Publish to Roblox Open Cloud
+        run: |
+          curl --fail --show-error --location \
+            --request POST "https://apis.roblox.com/universes/v1/${{ secrets.UNIVERSE_ID }}/places/${{ secrets.PLACE_ID }}/versions?versionType=Published" \
+            --header "x-api-key: ${{ secrets.ROBLOX_API_KEY }}" \
+            --header "Content-Type: application/octet-stream" \
+            --data-binary @AI_Obby_Adventure.rbxl
