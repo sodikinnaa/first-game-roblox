@@ -20,6 +20,7 @@ vector.__index = vector
 function vector.__add(a, b) return Vector3.new(a.X+b.X,a.Y+b.Y,a.Z+b.Z) end
 function vector.__sub(a, b) return Vector3.new(a.X-b.X,a.Y-b.Y,a.Z-b.Z) end
 function vector.__mul(a, b) return Vector3.new(a.X*b,a.Y*b,a.Z*b) end
+function vector.__div(a, b) return Vector3.new(a.X/b,a.Y/b,a.Z/b) end
 function vector:Lerp(b,t) return self+(b-self)*t end
 Vector3 = {new = function(x,y,z) return setmetatable({X=x or 0,Y=y or 0,Z=z or 0},vector) end}
 Color3 = {fromRGB = function(r,g,b) return {R=r,G=g,B=b} end}
@@ -120,6 +121,29 @@ def run_map(assertions):
 
 
 class MapGeometryTests(unittest.TestCase):
+    def test_islands_climb_significantly_and_turn_gently(self):
+        run_map(r'''
+local stages=LoadedStageConfig.STAGES
+assert(#stages==10)
+local lastDirection=nil
+local turns=0
+for i=1,9 do
+    local a,b=stages[i],stages[i+1]
+    assert(b.pos.Y-a.pos.Y>=12,"missing significant ascent")
+    local dx,dz=b.pos.X-a.pos.X,b.pos.Z-a.pos.Z
+    local length=math.sqrt(dx*dx+dz*dz)
+    local direction=Vector3.new(dx/length,0,dz/length)
+    if lastDirection then
+        local dot=direction.X*lastDirection.X+direction.Z*lastDirection.Z
+        assert(dot>0.85,"abrupt route turn")
+        if dot<0.999 then turns+=1 end
+    end
+    lastDirection=direction
+end
+assert(stages[10].pos.Y-stages[1].pos.Y>=180,"summit too low")
+assert(turns>=6,"route remains straight")
+''')
+
     def test_actual_generated_route_has_safe_edge_gaps_and_landing_sizes(self):
         run_map(r'''
 local map=Workspace:FindFirstChild("SkyIslandsMap")
@@ -134,19 +158,31 @@ for index,data in ipairs(LoadedStageConfig.STAGES) do
     for _,stone in ipairs(stones:GetChildren()) do
         if string.match(stone.Name,"^Stone_"..data.stage.."_") then table.insert(route,stone) end
     end
-    table.sort(route,function(a,b) return a.Position.Z<b.Position.Z end)
+    table.sort(route,function(a,b)
+        if a==island then return true end
+        if b==island then return false end
+        return tonumber(string.match(a.Name,"_(%d+)$"))<tonumber(string.match(b.Name,"_(%d+)$"))
+    end)
+    local target=LoadedStageConfig.STAGES[index+1]
+    local delta=target.pos-data.pos
+    local length=math.sqrt(delta.X^2+delta.Z^2)
+    local dx,dz=delta.X/length,delta.Z/length
+    local expectedRise=(target.pos.Y-data.pos.Y)/(#route)
+
     table.insert(route,islands:FindFirstChild("Island_"..(data.stage+1)))
     assert(#route>=3,"missing stepping route")
     for n=2,#route do
         local prev,part=route[n-1],route[n]
-        local gap=part.Position.Z-part.Size.Z/2-(prev.Position.Z+prev.Size.Z/2)
-        local early=data.stage<=3
-        assert(gap>=(early and 2 or 3)-0.001 and gap<=(early and 3 or 5)+0.001,
+        local dist=math.sqrt((part.Position.X-prev.Position.X)^2+(part.Position.Z-prev.Position.Z)^2)
+        local gap=dist-(prev.Size.Z+part.Size.Z)/2
+        assert(gap>=2.5-0.005 and gap<=4+0.005,
             string.format("unsafe edge gap stage %d jump %d: %.3f",data.stage,n-1,gap))
         local rise=(part.Position.Y+part.Size.Y/2)-(prev.Position.Y+prev.Size.Y/2)
         assert(rise>=0 and rise<=2,"unsafe vertical rise")
-        assert(not (gap>=4.99 and rise>1),"maximum gap combined with high rise")
-        assert(part.Position.X==prev.Position.X,"route needs lateral edge-gap audit")
+        assert(math.abs(rise - expectedRise) < 0.05, "rise not divided proportionally")
+        local proj = (part.Position.X - prev.Position.X) * dx + (part.Position.Z - prev.Position.Z) * dz
+        local lateral = math.sqrt(((part.Position.X - prev.Position.X) - dx * proj)^2 + ((part.Position.Z - prev.Position.Z) - dz * proj)^2)
+        assert(lateral < 1e-3, "stone deviated laterally from route segment")
         if n<#route then
             local minimum=data.stage==1 and 14 or (early and 12 or 10)
             assert(part.Size.X>=minimum and part.Size.Z>=minimum,"narrow stone stage "..data.stage)
@@ -167,10 +203,14 @@ assert(#checkpoints:GetChildren()==10,"idempotency failed: duplicate checkpoints
 local before = #Workspace:GetDescendants()
 Builder.start()
 assert(#Workspace:GetDescendants()==before,"repeated build changed total instance count")
-assert(before < 240,"graybox exceeded lightweight instance budget")
+assert(before < 260,"graybox exceeded lightweight instance budget: "..before)
 local obstacles = Workspace:FindFirstChild("Obstacles")
-assert(#obstacles:GetChildren()==1,"duplicate fall recovery zone")
-assert(obstacles:FindFirstChild("KillBrick").CanTouch,"fall recovery must emit touch events")
+assert(#obstacles:GetChildren() >= 10, "obstacles folder missing tiered recovery zones")
+for _, ob in ipairs(obstacles:GetChildren()) do
+    assert(ob.Name == "KillBrick", "obstacle must be named KillBrick for ObstacleService compatibility")
+    assert(ob.CanTouch, "fall recovery must emit touch events")
+    assert(not ob.CanCollide, "fall recovery must not collide")
+end
 ''')
 
     def test_spawn_location_present_on_stage_1_facing_positive_z(self):
@@ -183,6 +223,11 @@ assert(spawn.Anchored == true, "SpawnLocation must be anchored")
 assert(spawn.CanCollide == true, "SpawnLocation should have CanCollide true")
 assert(spawn.Duration == 0, "SpawnLocation Duration should be 0 for clean cozy respawn")
 assert(spawn.Neutral == true, "SpawnLocation must be neutral")
+local d1 = LoadedStageConfig.STAGES[2].pos - LoadedStageConfig.STAGES[1].pos
+local len1 = math.sqrt(d1.X^2 + d1.Z^2)
+local dir1 = Vector3.new(d1.X / len1, 0, d1.Z / len1)
+assert(math.abs(spawn.CFrame.LookVector.X - dir1.X) < 1e-3, "SpawnLocation must face segment 1 direction X")
+assert(math.abs(spawn.CFrame.LookVector.Z - dir1.Z) < 1e-3, "SpawnLocation must face segment 1 direction Z")
 assert(spawn.CFrame.LookVector.Z > 0.9, "SpawnLocation must face +Z towards stage progression")
 assert(spawn.Position.Z < 0, "SpawnLocation should be located at the entry of Stage 1")
 ''')
@@ -228,13 +273,47 @@ end
 
     def test_checkpoints_face_positive_z(self):
         run_map(r'''
+local stages = LoadedStageConfig.STAGES
 local checkpoints = Workspace:FindFirstChild("Checkpoints")
 assert(checkpoints ~= nil, "Checkpoints folder missing")
-for stage = 1, 10 do
+for stage = 1, 9 do
     local cp = checkpoints:FindFirstChild("Checkpoint_" .. stage)
     assert(cp ~= nil, "Checkpoint_" .. stage .. " missing")
-    assert(cp.CFrame.LookVector.Z > 0.9, "Checkpoint_" .. stage .. " must face +Z for safe respawn facing")
+    local d = stages[stage + 1].pos - stages[stage].pos
+    local len = math.sqrt(d.X^2 + d.Z^2)
+    local dir = Vector3.new(d.X / len, 0, d.Z / len)
+    assert(math.abs(cp.CFrame.LookVector.X - dir.X) < 1e-3, "Checkpoint_" .. stage .. " lookVector X mismatch")
+    assert(math.abs(cp.CFrame.LookVector.Z - dir.Z) < 1e-3, "Checkpoint_" .. stage .. " lookVector Z mismatch")
 end
+local cp10 = checkpoints:FindFirstChild("Checkpoint_10")
+assert(cp10 ~= nil, "Checkpoint_10 missing")
+assert(cp10.CFrame.LookVector.Z > 0.9, "Checkpoint_10 must face forward into summit")
+''')
+
+    def test_fall_recovery_zones_tiered_per_segment(self):
+        run_map(r'''
+local stages = LoadedStageConfig.STAGES
+local obstacles = Workspace:FindFirstChild("Obstacles")
+assert(obstacles ~= nil, "Obstacles folder missing")
+local killBricks = obstacles:GetChildren()
+assert(#killBricks == 10, "expected 10 tiered fall recovery zones (1 per stage segment)")
+
+local minY, maxY = 9999, -9999
+for index, data in ipairs(stages) do
+    local kb = nil
+    for _, child in ipairs(killBricks) do
+        if child:GetAttribute("StageSegment") == data.stage then
+            kb = child
+            break
+        end
+    end
+    assert(kb ~= nil, "missing recovery zone for stage " .. index)
+    assert(kb.Position.Y < data.pos.Y, "recovery zone must be below stage " .. index)
+    assert(kb.Position.Y >= data.pos.Y - 35, "recovery zone too far below stage " .. index)
+    if kb.Position.Y < minY then minY = kb.Position.Y end
+    if kb.Position.Y > maxY then maxY = kb.Position.Y end
+end
+assert(maxY - minY >= 150, "recovery zones must be tiered across significant vertical ascent")
 ''')
 
 

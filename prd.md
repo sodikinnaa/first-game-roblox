@@ -43,21 +43,21 @@ roblox-game/
 
 ---
 
-## 3. Rincian 10 Stage (Sky Islands Journey)
-Setiap stage dirancang bertingkat dengan pulau aman (*resting zone*), koin penunjuk arah, dan tanpa lompatan buta (*blind jumps*).
+## 3. Rincian 10 Stage (Sky Islands Vertical Ascent Journey)
+Keputusan user: perjalanan menanjak menuju summit, tidak lurus ke depan. Spiral/zigzag halus adalah usulan layout; bentuk final belum dipilih. Setiap pulau utama lebih tinggi dari sebelumnya, dengan pulau istirahat aman dan target pendaratan terlihat. Angka Y berikut adalah target desain sementara, bukan koordinat kode yang sudah diuji. Selisih tinggi antarpulau harus dibagi melalui beberapa pijakan/tangga/lereng; batas kenaikan satu lompatan tetap 0–2 studs. Jumlah pijakan dihitung ulang agar gap dan kenaikan aman, bukan mempertahankan tiga batu untuk kenaikan 12–28 studs.
 
-| Stage | Nama Pulau / Tema | Karakteristik Jalur & Mekanik | Checkpoint & Safe Zone |
-|:---:|---|---|---|
-| **1** | **Welcome Meadow** | Padang rumput & bunga. Pengenalan jalan, lompat dasar, kamera. Pijakan ekstra lebar (14x14+ studs). | Spawn awal & akhir pulau |
-| **2** | **Cloud Garden** | Taman pulau melayang. Lompatan pendek berurutan (gap 2-3 studs) dengan target terlihat jelas. | Checkpoint 2 |
-| **3** | **Breeze Bridge** | Jembatan kayu gantung warna hangat. Latihan berjalan lurus dan melompat celah tunggal. | Checkpoint 3 |
-| **4** | **Terrace Grove** | Pulau bertingkat dengan elevasi rendah (+1 s.d. +2 studs). Pendaratan lebar. | Checkpoint 4 |
-| **5** | **Pond Islands** | Kolam air dekoratif & batu loncatan berbelok. Koin ditempatkan di tengah batu sebagai penuntun jalur. | Checkpoint 5 |
-| **6** | **Cloud Steps** | Serangkaian 3-4 pijakan awan empuk diselingi pulau istirahat kecil. | Checkpoint 6 |
-| **7** | **Sky Orchard** | Kebun buah terapung. Kombinasi belokan ringan dan kenaikan bertahap. | Checkpoint 7 |
-| **8** | **Sunset Walk** | Cahaya senja hangat. Jalur sedikit lebih panjang menggabungkan variasi pijakan stage sebelumnya. | Checkpoint 8 |
-| **9** | **Summit Approach** | Tanjakan lebar menuju gerbang puncak. Jalur kembali melebar untuk transisi tenang. | Checkpoint 9 |
-| **10** | **Special Summit** | Plaza puncak luas (minimal 48x48 studs). Area selebrasi, istirahat, dan panorama tanpa bahaya jatuh. | Summit Finish Zone |
+| Stage | Nama Pulau / Tema | Elevasi & Tata Jalur | Karakteristik Jalur & Mekanik | Checkpoint & Safe Zone |
+|:---:|---|---|---|---|
+| **1** | **Welcome Meadow** | Y: 10 (Elevasi Awal) | Padang rumput & bunga. Pengenalan jalan, lompat dasar, kamera. Pijakan ekstra lebar (14x14+ studs). | Spawn awal & akhir pulau |
+| **2** | **Cloud Garden** | Y: 22 (+12 studs menanjak) | Taman pulau melayang. Tangga batu bertingkat pendek (gap 2-3 studs) dengan target terlihat jelas. | Checkpoint 2 |
+| **3** | **Breeze Bridge** | Y: 36 (+14 studs menanjak) | Jembatan kayu gantung melengkung naik. Latihan berjalan menanjak dan melompat celah tunggal. | Checkpoint 3 |
+| **4** | **Terrace Grove** | Y: 52 (+16 studs menanjak) | Terasering pulau hijau bertingkat. Belokan 45 derajat dengan pendaratan lebar. | Checkpoint 4 |
+| **5** | **Pond Islands** | Y: 70 (+18 studs menanjak) | Kolam air dekoratif & batu loncatan spiral melingkar naik. Koin di tengah batu sebagai penuntun jalur. | Checkpoint 5 |
+| **6** | **Cloud Steps** | Y: 90 (+20 studs menanjak) | Rangkaian pijakan awan padat bertangga naik diselingi pulau istirahat berpagar. | Checkpoint 6 |
+| **7** | **Sky Orchard** | Y: 112 (+22 studs menanjak) | Kebun buah terapung dengan lereng landai menanjak dan belokan ringan. | Checkpoint 7 |
+| **8** | **Sunset Walk** | Y: 136 (+24 studs menanjak) | Jalur senja melengkung naik tinggi dengan panorama pulau-pulau bawah yang sudah dilewati. | Checkpoint 8 |
+| **9** | **Summit Approach** | Y: 162 (+26 studs menanjak) | Tangga agung lebar menuju gerbang awan puncak. Jalur melebar untuk transisi tenang. | Checkpoint 9 |
+| **10** | **Special Summit** | Y: 190 (Puncak Tertinggi) | Plaza puncak megah (48x48 studs) di atas seluruh pulau. Area selebrasi, pemandangan 360°, tanpa rintangan. | Summit Finish Zone |
 
 ---
 
@@ -95,10 +95,11 @@ Untuk menciptakan suasana hangat dan selebrasi di area puncak tanpa membebani pe
    - Tiang lentera hangat di sekeliling plaza untuk pencahayaan lembut.
    - Gazebo / panggung selebrasi beratap kubah pastel di tengah plaza dengan spot foto berlatar awan.
    - Partikel konfeti lembut melayang perlahan di udara saat selebrasi aktif.
-2. **Perayaan Interaktif (Client-Only)**:
-   - Efek kembang api warna-warni meluncur ke langit selama 5 detik setelah pemain menginjak zona finish.
-   - Banner selebrasi ramah mobile dengan teks sambutan ceria dan tombol "Replay Selebrasi".
-   - Seluruh efek dirancang per-pemain sehingga tidak membuat lag atau mengganggu pemain lain yang sedang berada di area puncak.
+2. **Perayaan Interaktif (Client-Only - Mengacu Referensi Visual DevForum #3592913)**:
+   - **Efek Konfeti 3D di World (Keputusan User)**: Konfeti warna pastel meletup dan turun perlahan di sekitar karakter setelah finish sah, hanya terlihat oleh pemain terkait; bukan overlay konfeti UI 2D. Kamera dan kontrol tetap bebas. Pendekatan teknis yang diusulkan: `ParticleEmitter` dan attachment yang dibuat client lokal, dengan kode orisinal. Referensi visual: https://devforum.roblox.com/t/confetti-effect/3592913 (bukan izin menyalin kode/aset). Target durasi seluruh presentasi 3–5 detik, termasuk umur partikel terakhir; 40–60 partikel aktif adalah baseline prototipe, bukan jaminan aman/lebih ringan di mobile. Tekstur harus orisinal atau berizin, dan performa wajib diuji pada perangkat target.
+   - **Kembang Api Langit (opsional, belum dipilih)**: nonaktif pada rancangan default; tidak otomatis ditambahkan karena user memilih konfeti.
+   - **Banner Selebrasi Ramah Mobile**: Menampilkan ucapan selamat datang di puncak dengan opsi tombol "Replay Selebrasi" untuk mengulang efek partikel tanpa menambah statistik koin.
+   - Efek hanya untuk pemain penerima; cleanup, reduced motion, dan pengujian performa wajib. Client-only bukan jaminan bebas lag. Lisensi kode/tekstur referensi harus diverifikasi sebelum penggunaan/distribusi dalam repo MIT; jika tidak jelas, buat efek orisinal.
 
 ### C. Kontrak Konfigurasi Modular (`SummitConfig.luau`)
 ```luau
@@ -126,12 +127,13 @@ local SummitConfig = {
             AnchorId = "DecorationAnchor",
         },
         Confetti = {
-            Enabled = true,          -- Mode meriah: konfeti aktif saat finish
+            Enabled = true,          -- Mode meriah: konfeti 3D aktif saat finish
+            Type = "World3D",        -- "World3D" (Karakter Attachment ParticleEmitter)
             DurationSeconds = 5,
-            MaxLiveParticles = 80,
+            MaxLiveParticles = 60,   -- Baseline usulan; wajib diuji mobile
         },
         Fireworks = {
-            Enabled = true,          -- Mode meriah: kembang api aktif
+            Enabled = false,         -- Opsional, belum dipilih user
             DurationSeconds = 5,
             AnchorId = "FireworksAnchor",
         },
@@ -181,7 +183,7 @@ Masuk → spawn/checkpoint → lewati jalur pulau → kumpulkan koin opsional �
 - Checkpoint utama memiliki urutan stabil; checkpoint istirahat tambahan memakai ID terpisah dan tidak menggandakan reward stage.
 - Rancangan dasar tidak mewajibkan timer, platform bergerak/runtuh, blind jump, atau hukuman kehilangan koin. Mekanik menantang dari konsep awal bukan persyaratan MVP cozy.
 - Koin menunjukkan jalur aman; mengumpulkan semuanya bukan syarat finish. Nilai reward dan kebijakan reset pickup belum disetujui. Nilai 25/1 pada kode lama adalah konfigurasi awal, bukan keputusan ekonomi final.
-- Core summit: plaza aman, validasi server, catatan selesai, banner netral. Kue, ucapan personal, dekorasi, musik, konfeti, kembang api, dan kamera hanyalah opsi nonaktif sampai dipilih user.
+- Core summit: plaza aman, validasi server, catatan selesai, banner general dan konfeti sesuai referensi pilihan user. Kue, nama/ucapan personal, musik, kembang api, dan kamera tetap nonaktif. Lentera/gazebo/spot foto adalah usulan dekorasi, bukan fitur yang telah diimplementasikan.
 
 ## 8. Kontrak Sistem, Keamanan, dan Kegagalan
 - Server memeriksa karakter hidup, posisi dalam zona, urutan checkpoint, dan riwayat progres; request client atau Touched saja tidak cukup untuk mengesahkan finish.
@@ -194,6 +196,12 @@ Masuk → spawn/checkpoint → lewati jalur pulau → kumpulkan koin opsional �
 Persistence direkomendasikan, tetapi menunggu persetujuan scope: profil per UserId dengan SchemaVersion, checkpoint/stage, Completed, Coins, dan penanda reward. Load gagal harus retry/menahan progres, tidak menimpa data lama dengan default. Jika diadopsi, gunakan UpdateAsync, penguncian sesi, retry terbatas, autosave data berubah, PlayerRemoving dan BindToClose. Uji menggunakan data development terpisah. Timer/personal best hanya ditambahkan bila disetujui.
 
 ## 9. Skenario Penerimaan Tambahan
+Revisi desain ini belum diimplementasikan. Given pemain bergerak dari stage n ke n+1, then pulau tujuan lebih tinggi dan jalur membelok, bukan seluruh pusat pulau segaris pada satu sumbu. Given selisih tinggi antarpulau, then setiap pijakan tetap memenuhi batas kenaikan/gap dan memiliki landing aman. Spawn menghadap segmen jalur berikutnya, tidak selalu +Z. Zona pemulihan mengikuti ketinggian/segmen rute agar jatuh tidak berlangsung lama atau mengaktifkan checkpoint pulau bawah secara salah.
+
+Given finish sah, when konfeti 3D diputar atau replay, then emisi partikel 3D terjadi di sekitar karakter pemain lokal (client-only), kamera tetap bebas dikendalikan pemain tanpa lock/cutscene, reward tidak bertambah, dan efek lama dibersihkan; reduced motion menggunakan banner statis tanpa emisi partikel 3D. Nama/ucapan ultah tidak muncul pada preset general. Uji PC/mobile serta lintasan 3D diperlukan sebelum layout dikunci.
+
+Lifecycle presentasi: Ready → Playing → Cooldown → Ready. Replay tidak tersedia selama Playing/Cooldown; sentuhan/event duplikat tidak menumpuk efek. Saat selesai, respawn, karakter hilang, atau kegagalan animasi, controller menghentikan emisi/callback dan menghapus attachment/partikel sementara. Kegagalan efek tidak membatalkan finish server. Modul konfeti diusulkan terpisah dari SummitController dengan kontrak Start/Stop; belum dibuat pada revisi dokumen ini.
+
 | ID | Given / When / Then |
 |---|---|
 | AC-09 | Given pemain belum melewati checkpoint wajib, when memasuki summit atau mengirim request finish, then server menolak penyelesaian. |
@@ -206,7 +214,27 @@ Persistence direkomendasikan, tetapi menunggu persetujuan scope: profil per User
 
 Target playtest usulan: 8 dari 10 pemain pemula dapat mencapai summit tanpa bantuan verbal; minimal 30 FPS pada perangkat mobile target yang kelak disepakati. Dimensi, spawn, safe area HUD, dan seluruh lompatan harus diuji nyata; tes Python tidak memenuhi penerimaan runtime Luau/Studio.
 
-## 10. Milestone dan Keputusan Tertunda
+## 10. Pipeline Aset 3D Eksternal & Import Open Cloud (CC0)
+Untuk mendukung nuansa alam yang nyaman dan ramah pemula, proyek mencatat dua pustaka aset berlisensi Creative Commons Zero (CC0):
+1. **Kenney Nature Kit**:
+   - Sumber: `https://kenney.nl/assets/nature-kit`
+   - Lisensi: CC0 (Public Domain).
+   - Status: Telah diunduh ke `assets/raw/kenney_nature-kit.zip` (11 MB, 329 model dalam format FBX, OBJ, dan glTF/GLB).
+   - Rencana Penggunaan: Tanaman kecil, bunga pastel, dan batu dekoratif di pulau-pulau awal.
+2. **Quaternius Ultimate Platformer Pack**:
+   - Sumber: `https://quaternius.itch.io/ultimate-platformer-pack`
+   - Lisensi: CC0.
+   - Status: Dicatat sebagai referensi; unduhan langsung dari itch.io memerlukan autentikasi/tindakan manual browser.
+   - Rencana Penggunaan: Awan 3D dan dekorasi plaza puncak di masa depan.
+
+### Catatan Teknis & Pipeline Import Open Cloud (Tanpa Wajib Roblox Studio)
+Berdasarkan dokumentasi resmi [Roblox Open Cloud Assets API](https://create.roblox.com/docs/cloud/guides/usage-assets):
+- **Upload Langsung dari VPS**: Model 3D berekstensi `.fbx`, `.gltf`, atau `.glb` dapat diunggah langsung via HTTP POST multipart form ke `https://apis.roblox.com/assets/v1/assets` dengan `assetType: "Model"`.
+- **Autentikasi & Izin**: Memerlukan header `x-api-key` dengan scope `asset:read` dan `asset:write`.
+- **Pemuatan di Runtime**: Setelah operasi upload disetujui (moderasi selesai), asset ID yang dihasilkan dapat dimuat di server/client menggunakan `InsertService:LoadAsset(assetId)` untuk instance `Model`, atau mereferensikan mesh ID melalui `InsertService:CreateMeshPartAsync()` / properti `MeshPart.MeshId = "rbxassetid://" .. assetId`.
+- **Collision & Performance**: Seluruh dekorasi vegetasi diatur `CanCollide = false` dan `CollisionFidelity = Box` atau `Hull` untuk menjaga FPS mobile tetap stabil.
+
+## 11. Milestone dan Keputusan Tertunda
 1. Konfirmasi desain: nama final, avatar/movement, durasi perjalanan, checkpoint tambahan, persistence, koin/reward, perangkat minimum, visibilitas.
 2. MVP general: graybox 9 stage + summit netral, progres/respawn, HUD, validasi finish; koin/persistence sesuai keputusan yang disetujui.
 3. Polishing: visual pulau, aksesibilitas, multiplayer dan playtest mobile; modul personalisasi hanya yang dipilih user.
