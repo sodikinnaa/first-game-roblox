@@ -3,11 +3,12 @@ local allowed = {Model=true, Folder=true, Part=true, MeshPart=true, SpecialMesh=
 
 -- Server-only, unparented staging; never assign Model IDs to MeshId.
 function DecorAssetService.load(assetId, parent, position, height, fallback)
-    if type(assetId) ~= "number" or assetId <= 0 then return false end
+    if type(assetId) ~= "number" or assetId <= 0 then return false, "InvalidAssetId" end
     local ok, model = pcall(function()
         return game:GetService("AssetService"):LoadAssetAsync(assetId)
     end)
-    if not ok or not model then return false end
+    if not ok or not model then return false, "LoadFailed" end
+    local failureStatus = "ValidationFailed"
     local valid = pcall(function()
         assert(model:IsA("Model"), "expected Model container")
         model.Parent = nil
@@ -28,15 +29,21 @@ function DecorAssetService.load(assetId, parent, position, height, fallback)
             end
         end
         assert(parts > 0 and parts <= 24, "decoration part budget")
+        failureStatus = "PlacementFailed"
         local size = model:GetExtentsSize()
         assert(size.Y > 0 and size.Y < 1000, "invalid decoration bounds")
-        model:ScaleTo(math.clamp(height / size.Y, 0.01, 20))
+        local currentScale = model:GetScale()
+        model:ScaleTo(math.clamp(currentScale * (height / size.Y), 0.01, 20))
         model:PivotTo(CFrame.new(position))
+        -- position denotes the deck surface, not the imported model pivot.
+        local bounds, extent = model:GetBoundingBox()
+        local targetCenter = position + Vector3.new(0, extent.Y / 2, 0)
+        model:PivotTo(model:GetPivot() + (targetCenter - bounds.Position))
         model.Parent = parent
     end)
-    if not valid then model:Destroy(); return false end
+    if not valid then model:Destroy(); return false, failureStatus end
     if fallback then fallback:Destroy() end
-    return true
+    return true, "Loaded"
 end
 
 -- At most two loads per map; game startup never waits for the network.
@@ -45,18 +52,33 @@ function DecorAssetService.start()
     local map = workspace:FindFirstChild("SkyIslandsMap")
     if not map then return end
     local decorations = map:FindFirstChild("Decorations")
+    if not decorations then return end
     for _, side in ipairs({-1, 1}) do
+        decorations:SetAttribute("KenneyTree_" .. side .. "Status", "Loading")
         local fallback = decorations:FindFirstChild("Shrub_1_" .. side)
         task.spawn(function()
             -- Parent may have been destroyed by an offline rebuild during load.
             local parent = Instance.new("Folder")
             parent.Name = "KenneyTree_" .. side
-            if DecorAssetService.load(118266415097960, parent, Vector3.new(side*9, 11, 2), 4, nil) then
-                if map.Parent then
+            local ok, status = DecorAssetService.load(118266415097960, parent, Vector3.new(side*9, 11, 2), 4, nil)
+            if ok then
+                if decorations:IsDescendantOf(workspace) then
+                    parent:SetAttribute("AssetId", 118266415097960)
+                    parent:SetAttribute("Status", "Loaded")
                     parent.Parent = decorations
-                    if fallback then fallback:Destroy() end
+                    decorations:SetAttribute("KenneyTree_" .. side .. "Status", "Loaded")
+                    if fallback and fallback.Parent then fallback:Destroy() end
                 else parent:Destroy() end
-            else parent:Destroy() end
+            else
+                parent:Destroy()
+                if decorations:IsDescendantOf(workspace) then
+                    decorations:SetAttribute("KenneyTree_" .. side .. "Status", status)
+                end
+                if fallback and fallback.Parent then
+                    fallback:SetAttribute("FallbackActive", true)
+                end
+                warn(string.format("[DecorAssetService] Stage1 tree side %d status: %s", side, status))
+            end
         end)
     end
 end

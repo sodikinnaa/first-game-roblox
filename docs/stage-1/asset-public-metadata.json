@@ -1,0 +1,140 @@
+{
+  "checkedAtUTC": "2026-10-14T04:33:51.123514+00:00",
+  "method": "GET",
+  "authentication": "none",
+  "endpoints": [
+    {
+      "url": "https://economy.roblox.com/v2/assets/118266415097960/details",
+      "httpStatus": 200,
+      "body": {
+        "TargetId": 118266415097960,
+        "ProductType": null,
+        "AssetId": 118266415097960,
+        "ProductId": 0,
+        "Name": "Stage1 Kenney FBX Tree",
+        "Description": "Kenney Nature Kit CC0 test",
+        "AssetTypeId": 10,
+        "Creator": {
+          "Id": 11795606123,
+          "Name": "sodikinnaa",
+          "CreatorType": "User",
+          "CreatorTargetId": 11795606123,
+          "HasVerifiedBadge": false
+        },
+        "IconImageAssetId": 0,
+        "Created": "2026-10-14T03:57:55.653Z",
+        "Updated": "2026-10-14T03:57:55.714Z",
+        "PriceInRobux": null,
+        "PriceInTickets": null,
+        "Sales": 0,
+        "IsNew": false,
+        "IsForSale": false,
+        "IsPublicDomain": false,
+        "IsLimited": false,
+        "IsLimitedUnique": false,
+        "Remaining": null,
+        "MinimumMembershipLevel": 0,
+        "ContentRatingTypeId": 0,
+        "SaleAvailabilityLocations": null,
+        "SaleLocation": null,
+        "CollectibleItemId": null,
+        "CollectibleProductId": null,
+        "CollectiblesItemDetails": null,
+        "TimedOptions": null
+      }
+    },
+    {
+      "url": "https://games.roblox.com/v1/games?universeIds=10770632072",
+      "httpStatus": 200,
+      "body": {
+        "data": [
+          {
+            "id": 0,
+            "rootPlaceId": 0,
+            "name": "[TITLE UNAVAILABLE]",
+            "description": "[DESCRIPTION UNAVAILABLE]",
+            "sourceName": null,
+            "sourceDescription": null,
+            "creator": {
+              "id": 0,
+              "name": "[UNKNOWN]",
+              "type": "User",
+              "isRNVAccount": false,
+              "hasVerifiedBadge": false
+            },
+            "price": null,
+            "allowedGearGenres": [],
+            "allowedGearCategories": [],
+            "isGenreEnforced": false,
+            "copyingAllowed": false,
+            "playing": 0,
+            "visits": 0,
+            "maxPlayers": 0,
+            "created": "0001-01-01T05:51:00Z",
+            "updated": "0001-01-01T05:51:00Z",
+            "studioAccessToApisAllowed": false,
+            "createVipServersAllowed": false,
+            "universeAvatarType": null,
+            "genre": null,
+            "isAllGenre": false,
+            "isFavoritedByUser": false,
+            "favoritedCount": 0,
+            "isContentRestricted": true
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://apis.roblox.com/universes/v1/places/71239438116581/universe",
+      "httpStatus": 200,
+      "body": {
+        "universeId": 10770632072
+      }
+    },
+    {
+      "url": "https://economy.roblox.com/v2/assets/71239438116581/details",
+      "httpStatus": 200,
+      "body": {
+        "TargetId": 0,
+        "ProductType": null,
+        "AssetId": 71239438116581,
+        "ProductId": 0,
+        "Name": "AI Obby Adventure",
+        "Description": "AI Obby Adventure adalah game petualangan parkour di Roblox dengan berbagai tantangan seru, rintangan unik, dan level yang semakin menantang.\n\nLompati platform, kumpulkan koin, aktifkan checkpoint, dan capai garis finish!\n\nGame ini dikembangkan menggunakan teknologi AI untuk menghadirkan pengalaman bermain yang menyenangkan dan interaktif.",
+        "AssetTypeId": 9,
+        "Creator": {
+          "Id": 11795606123,
+          "Name": "sodikinnaa",
+          "CreatorType": "User",
+          "CreatorTargetId": 11795606123,
+          "HasVerifiedBadge": false
+        },
+        "IconImageAssetId": 0,
+        "Created": "2026-10-13T07:04:01.885Z",
+        "Updated": "2026-10-14T04:14:35.501Z",
+        "PriceInRobux": null,
+        "PriceInTickets": null,
+        "Sales": 0,
+        "IsNew": false,
+        "IsForSale": false,
+        "IsPublicDomain": false,
+        "IsLimited": false,
+        "IsLimitedUnique": false,
+        "Remaining": null,
+        "MinimumMembershipLevel": 0,
+        "ContentRatingTypeId": 0,
+        "SaleAvailabilityLocations": null,
+        "SaleLocation": null,
+        "CollectibleItemId": null,
+        "CollectibleProductId": null,
+        "CollectiblesItemDetails": null,
+        "TimedOptions": null
+      }
+    },
+    {
+      "url": "https://apis.roblox.com/assets/v1/assets/118266415097960",
+      "httpStatus": 403,
+      "note": "Unauthenticated metadata unavailable; not an asset rejection or runtime load result."
+    }
+  ]
+}

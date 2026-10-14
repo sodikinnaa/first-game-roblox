@@ -31,6 +31,45 @@ A real Kenney archive FBX tree fallback was uploaded and polled successfully:
 
 Only the completed FBX tree asset is integrated. Flower/rock retain primitive visuals because GLB importer processing failed. No claim that GLB import succeeded, nor that the actual Model was loaded/rendered in Roblox. No publish or visibility changes.
 
+## Narrow asset visibility follow-up (verification only)
+
+Based on `eb9f42b` / reported published version 4. These local changes are **not published**; no upload, publication, visibility change, commit, push, or dotenv access occurred. Existing main-checkout documents/user edits were not touched.
+
+### Confirmed offline defects and minimal repair
+
+- `MapBuilderService` generates `Shrub_1_-1` and `Shrub_1_1` at centers `(-9,12,2)` and `(9,12,2)`; the deck top is Y11. Names in the loader match. Fallback naming is not the defect.
+- `PivotTo(...Y11...)` places the imported **pivot**, not the geometry bottom. Offset-pivot regression failed with “tree sunk under surface”; the fix queries the bounding box after upright placement/scaling and translates its center to `(side*9, 11 + extent.Y/2, 2)`. This proves bottom alignment for adapter fixtures, not the actual imported model's pivot or visibility.
+- `ScaleTo` takes absolute canonical scale. A model initially at scale2 failed requested height4 with the old ratio; now uses `GetScale() * height/currentBoundsHeight`, retaining the original clamp `[0.01,20]` (extreme inputs may remain clamped).
+- Parent attachment now requires Decorations to remain a descendant of Workspace after the yielding load; missing Decorations is guarded. Staging is destroyed when the old map/decorations was removed. Primitive fallback is removed only after validation, placement, and live attachment succeed.
+- Fixed stage-only status codes are persisted on Decorations: `KenneyTree_-1Status` / `KenneyTree_1Status`: `Loading`, `Loaded`, `LoadFailed`, `ValidationFailed`, `PlacementFailed`. Successful `KenneyTree_<side>` folders have `AssetId` and `Status=Loaded`; failure leaves shrub and marks `FallbackActive=true`. Server warnings carry only stage/side/fixed code, never raw exception text, request bodies or credentials. `LoadFailed` does not distinguish permission/network/moderation failures: native Roblox logs must supply that evidence.
+- Existing executable stripping, allowlist, 80-instance/24-part budgets, anchored/noncolliding/nontouch/nonquery flags and two asynchronous loads remain. No new model IDs or later-stage changes.
+
+### Public GET evidence and remaining ownership uncertainty
+
+Actual unauthenticated responses are saved in [asset-public-metadata.json](asset-public-metadata.json), checked 2026-10-14:
+
+- `GET https://economy.roblox.com/v2/assets/118266415097960/details` → HTTP200, asset type10 (Model), creator User `11795606123` / `sodikinnaa`, name `Stage1 Kenney FBX Tree`. Public metadata confirms asset identity/creator but contains **no Approved/Active fields**.
+- `GET https://games.roblox.com/v1/games?universeIds=10770632072` → HTTP200 but restricted placeholder (`id=0`, creator0/UNKNOWN, `isContentRestricted=true`). This endpoint **cannot establish the universe creator** in this response. No privacy setting was changed to bypass this.
+- `GET https://apis.roblox.com/universes/v1/places/71239438116581/universe` → HTTP200 universe `10770632072`; public economy details for that place → HTTP200 creator User `11795606123`. This is corroborating place-owner evidence, not direct universe-owner proof from games API.
+- `GET https://apis.roblox.com/assets/v1/assets/118266415097960` → HTTP403 without authentication. `assets/kenney/manifest.json` records `Approved`/`Active` from the earlier completed Open Cloud upload operation's response, not current public metadata. No new authenticated metadata lookup was attempted and current moderation/loadability is not proven.
+- `AssetService:LoadAssetAsync` requires ownership/appropriate permission in the target experience; matching asset/place creator is encouraging but not native load evidence. Do **not** enable a third-party loading switch as a workaround.
+
+### Executed local checks versus runtime gate
+
+`python3 -m unittest discover -s tests -v`: **34 passed**, including seven decorator tests executing shipped Luau (offset pivot, noncanonical scale, sanitization, fallback, status, budgets/rejection, removed parents). Four legacy economy tests are Python emulators. Adapter is translation-only and cannot reproduce imported meshes, oriented native bounding boxes, rendering, moderation, AssetService or Roblox physics. New regression failures were observed before the respective fixes. All **17** shipped Luau files compiled; Rojo build succeeded; `git diff --check` clean.
+
+Artifact: `build/Stage1_Visibility_Verified.rbxl`, 25,575 bytes, SHA256 `beee81ce80a09187fb73a326c14c85526e7a60289641ef980f814e21d68ec348`. This packages code, not baked decor or a playtest.
+
+Host probe: Linux; no RobloxStudio, RobloxPlayer, Wine or Sober command found. Roblox Studio/native AssetService renderer was **not executed**. There are no fabricated headless screenshots. Actual model colors, pivot, meshes, visibility, camera clearance and runtime load remain unknown.
+
+### User runtime diagnosis (Studio/server F9)
+
+1. Test the local artifact in an owned Studio experience; a local build does not modify version4. Existing release will not have the new attributes unless a later separately authorized publication happens.
+2. In Studio Play, inspect `Workspace.SkyIslandsMap.Decorations`. Expect `KenneyTree_-1` and `KenneyTree_1`, each containing the imported Model/parts; expected bounds bottom Y11, height approximately4, centers X−9/+9 Z2. Shrubs should disappear only for successfully attached trees.
+3. Watch `KenneyTree_-1Status` and `KenneyTree_1Status` on Decorations. `Loading` means request pending; `Loaded` means sanitized model attached, **not guaranteed visible pixels**. Failure status should leave the corresponding shrub. Do not confuse Stage2+ shrubs with Stage1 fallbacks.
+4. Open **F9 → Server** log (owner/developer access), or Studio **Output**. Search `[DecorAssetService]` and native asset ID `118266415097960` errors. Record fixed status, any Roblox-native permission/moderation message, place/universe and tested build/version; redact credentials if sharing logs. `ValidationFailed` indicates rejected structure/budget; `PlacementFailed` indicates sizing/pivot/attachment operation failed. Avoid third-party loading changes.
+5. If Loaded but invisible, inspect actual child MeshParts/Transparency/materials/mesh delivery and GetBoundingBox in Studio; compare with deck top and camera location. This cannot be settled by offline tests alone.
+
 ## Real verification and remaining gates
 
 `python3 -m unittest discover -s tests -v`: 28 tests passed; shipped Luau runs through adapters for geometry/count/gaps/surface heights/rebuild, checkpoint state/rotated respawn, movement/R15 replacement path, HUD input feedback, and decorator sanitization/fallback. Four legacy Python economy tests remain emulators and are not runtime evidence. All 17 shipped Luau files compiled with real `luau-compile`. Rojo build succeeded at:
