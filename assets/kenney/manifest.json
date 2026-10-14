@@ -1,0 +1,241 @@
+{
+  "source": "https://kenney.nl/assets/nature-kit",
+  "license": "CC0-1.0",
+  "archiveSha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+  "authorizedUserId": "11795606123",
+  "creatorName": "sodikinnaa",
+  "authorization": {
+    "enabled": true,
+    "expired": false,
+    "assetScopes": [
+      {
+        "name": "asset-permissions",
+        "operations": [
+          "write"
+        ]
+      },
+      {
+        "name": "asset",
+        "operations": [
+          "write"
+        ],
+        "groupIds": [
+          "*"
+        ],
+        "userIds": [
+          "*"
+        ]
+      },
+      {
+        "name": "legacy-asset",
+        "operations": [
+          "manage"
+        ]
+      }
+    ]
+  },
+  "assets": [
+    {
+      "name": "flower_yellowA",
+      "sourcePath": "Models/GLTF format/flower_yellowA.glb",
+      "sha256": "8a3b08cd2ca411c21f9c581d5bda651d78b13c50cba45ad8fa0389398ead6d1d",
+      "bytes": 7120,
+      "assetType": "Model",
+      "creatorUserId": "11795606123",
+      "validation": {
+        "glbVersion": 2,
+        "meshes": 1,
+        "materials": 2,
+        "embeddedImages": 0,
+        "selfContained": true,
+        "accessorBounds": [
+          {
+            "min": [
+              -0.1045345,
+              0,
+              -0.09052953
+            ],
+            "max": [
+              0.05456302,
+              0.1925,
+              0.09052953
+            ]
+          }
+        ]
+      },
+      "polls": [
+        {
+          "path": "operations/93c80eb6-d288-4faa-b89a-6ba95daeda7b",
+          "done": false,
+          "httpStatus": 200
+        },
+        {
+          "path": "operations/93c80eb6-d288-4faa-b89a-6ba95daeda7b",
+          "done": true,
+          "error": {
+            "code": "Unknown",
+            "message": "Failed to parse the uploaded file",
+            "details": []
+          },
+          "httpStatus": 200
+        }
+      ],
+      "uploadHttpStatus": 200,
+      "operationPath": "operations/93c80eb6-d288-4faa-b89a-6ba95daeda7b",
+      "assetId": null,
+      "error": {
+        "code": "Unknown",
+        "message": "Failed to parse the uploaded file",
+        "details": []
+      }
+    },
+    {
+      "name": "tree_default",
+      "sourcePath": "Models/GLTF format/tree_default.glb",
+      "sha256": "562d29638c902de3c7bee465d3a53bb77117efbc392ae04ed894faf6b5dc691d",
+      "bytes": 9428,
+      "assetType": "Model",
+      "creatorUserId": "11795606123",
+      "validation": {
+        "glbVersion": 2,
+        "meshes": 1,
+        "materials": 2,
+        "embeddedImages": 0,
+        "selfContained": true,
+        "accessorBounds": [
+          {
+            "min": [
+              -0.377500027,
+              0,
+              -0.3269245
+            ],
+            "max": [
+              0.377500027,
+              1.70788741,
+              0.3269245
+            ]
+          }
+        ]
+      },
+      "polls": [
+        {
+          "path": "operations/2e412161-2175-4ca4-9c4d-b171d6e53105",
+          "done": false,
+          "httpStatus": 200
+        },
+        {
+          "path": "operations/2e412161-2175-4ca4-9c4d-b171d6e53105",
+          "done": true,
+          "error": {
+            "code": "Unknown",
+            "message": "Failed to parse the uploaded file",
+            "details": []
+          },
+          "httpStatus": 200
+        }
+      ],
+      "uploadHttpStatus": 200,
+      "operationPath": "operations/2e412161-2175-4ca4-9c4d-b171d6e53105",
+      "assetId": null,
+      "error": {
+        "code": "Unknown",
+        "message": "Failed to parse the uploaded file",
+        "details": []
+      }
+    },
+    {
+      "name": "rock_smallA",
+      "sourcePath": "Models/GLTF format/rock_smallA.glb",
+      "sha256": "df9fff9d711e61370e8df0caa2514c89b8f8a8dc6c6fafaf4eb2ec79c5ae07c1",
+      "bytes": 3044,
+      "assetType": "Model",
+      "creatorUserId": "11795606123",
+      "validation": {
+        "glbVersion": 2,
+        "meshes": 1,
+        "materials": 2,
+        "embeddedImages": 0,
+        "selfContained": true,
+        "accessorBounds": [
+          {
+            "min": [
+              -0.1804,
+              2.25597316e-17,
+              -0.1804
+            ],
+            "max": [
+              0.1804,
+              0.191224009,
+              0.1804
+            ]
+          }
+        ]
+      },
+      "polls": [
+        {
+          "path": "operations/3b50efe6-6e8b-45d8-9bf3-5a95fe49018a",
+          "done": false,
+          "httpStatus": 200
+        },
+        {
+          "path": "operations/3b50efe6-6e8b-45d8-9bf3-5a95fe49018a",
+          "done": true,
+          "error": {
+            "code": "Unknown",
+            "message": "Failed to parse the uploaded file",
+            "details": []
+          },
+          "httpStatus": 200
+        }
+      ],
+      "uploadHttpStatus": 200,
+      "operationPath": "operations/3b50efe6-6e8b-45d8-9bf3-5a95fe49018a",
+      "assetId": null,
+      "error": {
+        "code": "Unknown",
+        "message": "Failed to parse the uploaded file",
+        "details": []
+      }
+    }
+  ],
+  "fbxFallback": {
+    "sourcePath": "Models/FBX format/tree_default.fbx",
+    "sha256": "687a3f9905b8d832a130f19c62319d8f02d2caf49b74924ed3a87099c93f9566",
+    "bytes": 30945,
+    "assetId": "118266415097960",
+    "operation": {
+      "path": "operations/2a4bce82-405e-4d7d-b493-541c2d7869fe",
+      "operationId": "2a4bce82-405e-4d7d-b493-541c2d7869fe",
+      "done": true,
+      "response": {
+        "path": "assets/118266415097960",
+        "revisionId": "1",
+        "revisionCreateTime": "2026-10-14T03:57:55.672Z",
+        "assetId": "118266415097960",
+        "displayName": "Stage1 Kenney FBX Tree",
+        "description": "Kenney Nature Kit CC0 test",
+        "assetType": "Model",
+        "creationContext": {
+          "creator": {
+            "userId": "11795606123"
+          }
+        },
+        "moderationResult": {
+          "moderationState": "Approved"
+        },
+        "state": "Active"
+      }
+    },
+    "ownershipVerification": {
+      "creator": {
+        "Id": 11795606123,
+        "Name": "sodikinnaa",
+        "CreatorType": "User",
+        "CreatorTargetId": 11795606123,
+        "HasVerifiedBadge": false
+      },
+      "assetTypeId": 10
+    },
+    "reason": "All three valid archive GLB uploads failed importer parsing; actual archive FBX tree upload completed Approved/Active."
+  }
+}

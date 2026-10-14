@@ -117,6 +117,7 @@ player.Character = character
 player.CharacterAdded = newSignal()
 players.GetPlayers = function() return { player } end
 local cp1 = newPart("Checkpoint_1", vector(8, 1, 8))
+cp1.CFrame=CFrame.lookAt(cp1.Position,cp1.Position+vector(0,0,1))
 local cp2 = newPart("Checkpoint_2", vector(8, 1, 8))
 local cp3 = newPart("Checkpoint_3", vector(8, 1, 8))
 local cp10 = newPart("Checkpoint_10", vector(8, 1, 8))

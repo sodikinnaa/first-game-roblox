@@ -15,7 +15,7 @@ local function getCheckpointCFrame(stageNum: number): CFrame?
         local cp = checkpointsFolder:FindFirstChild("Checkpoint_" .. tostring(stageNum))
         if cp and cp:IsA("BasePart") then
             local pos = cp.Position + Vector3.new(0, 3.5, 0)
-        return CFrame.lookAt(pos, pos + Vector3.new(0, 0, 1))
+            return CFrame.lookAt(pos, pos + cp.CFrame.LookVector)
         end
     end
     return nil

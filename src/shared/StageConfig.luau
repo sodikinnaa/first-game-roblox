@@ -16,4 +16,23 @@ StageConfig.STAGES = {
     { stage = 10, name = "Sky Summit", pos = Vector3.new(-94.3419, 190, 1497.7646), size = Vector3.new(48, 2, 48), color = Color3.fromRGB(237, 228, 207), material = Enum.Material.Marble },
 }
 
+-- One rigid yaw/translation preserves every Stage2–10 route and local style.
+StageConfig.ORIGINAL_STAGES = StageConfig.STAGES
+local oldAnchor = StageConfig.STAGES[2].pos
+local delta = StageConfig.STAGES[3].pos - oldAnchor
+local length = math.sqrt(delta.X^2 + delta.Z^2)
+StageConfig.DownstreamCos = delta.X / length
+StageConfig.DownstreamSin = -delta.Z / length
+function StageConfig.transformPosition(pos)
+    local d = pos - oldAnchor
+    return Vector3.new(24 + d.X * StageConfig.DownstreamCos - d.Z * StageConfig.DownstreamSin,
+        pos.Y, 143.6 + d.X * StageConfig.DownstreamSin + d.Z * StageConfig.DownstreamCos)
+end
+local transformed = {}
+for index, data in ipairs(StageConfig.ORIGINAL_STAGES) do
+    local copy = table.clone(data)
+    if index >= 2 then copy.pos = StageConfig.transformPosition(data.pos) end
+    transformed[index] = copy
+end
+StageConfig.STAGES = transformed
 return StageConfig

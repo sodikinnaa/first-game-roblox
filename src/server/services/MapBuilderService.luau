@@ -3,6 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StageConfig = require(ReplicatedStorage.Common.StageConfig)
 
 local MapBuilderService = {}
+local buildingStage = 1
 
 local function ensureFolder(name: string, parent: Instance): Folder
     local folder = parent:FindFirstChild(name)
@@ -26,6 +27,7 @@ local function part(name, size, position, color, material, parent)
     result.BottomSurface = Enum.SurfaceType.Smooth
     result.CanTouch = false
     result:SetAttribute("SkyIslandGenerated", true)
+    result:SetAttribute("GeometryStage", buildingStage)
     result.Parent = parent
     return result
 end
@@ -53,14 +55,15 @@ function MapBuilderService.buildIslands()
     local checkpoints = ensureFolder("Checkpoints", Workspace)
     local obstacles = ensureFolder("Obstacles", Workspace)
 
-    for index, data in ipairs(StageConfig.STAGES) do
+    for index, data in ipairs(StageConfig.ORIGINAL_STAGES) do
+        buildingStage = index
         part("Island_" .. data.stage, data.size, data.pos, data.color, data.material, islands)
         local deckY = data.pos.Y + data.size.Y / 2
 
         -- Determine forward segment orientation for checkpoints and stepping stones
         local dir = Vector3.new(0, 0, 1)
-        if index < #StageConfig.STAGES then
-            local nextData = StageConfig.STAGES[index + 1]
+        if index < #StageConfig.ORIGINAL_STAGES then
+            local nextData = StageConfig.ORIGINAL_STAGES[index + 1]
             local delta = nextData.pos - data.pos
             local horizLen = math.sqrt(delta.X^2 + delta.Z^2)
             if horizLen > 0 then
@@ -68,12 +71,15 @@ function MapBuilderService.buildIslands()
             end
         end
 
+        if index == 1 then dir = Vector3.new(0, 0, 1) end
+
         local cpPos
-        if index < #StageConfig.STAGES then
+        if index < #StageConfig.ORIGINAL_STAGES then
             cpPos = data.pos + Vector3.new(0, data.size.Y / 2 + 0.25, 0) - dir * (data.size.Z / 4)
         else
             cpPos = data.pos + Vector3.new(0, data.size.Y / 2 + 0.25, -data.size.Z / 4)
         end
+        if index == 2 then cpPos = data.pos + Vector3.new(0, 1.25, 0) end
         local cp = part("Checkpoint_" .. data.stage, Vector3.new(8, 0.5, 8),
             cpPos, Color3.fromRGB(147, 205, 214), Enum.Material.SmoothPlastic, checkpoints)
         cp.CanCollide = false
@@ -93,7 +99,7 @@ function MapBuilderService.buildIslands()
         end
 
         local landingPos
-        if index < #StageConfig.STAGES then
+        if index < #StageConfig.ORIGINAL_STAGES then
             landingPos = data.pos + Vector3.new(0, data.size.Y / 2 + 0.03, 0) - dir * (data.size.Z / 4)
         else
             landingPos = Vector3.new(data.pos.X, deckY + 0.03, data.pos.Z - data.size.Z / 4)
@@ -142,13 +148,35 @@ function MapBuilderService.buildIslands()
             spawn.CFrame = CFrame.lookAt(spawn.Position, spawn.Position + dir)
             spawn.Neutral = true
             spawn.Duration = 0
-            spawn.CanCollide = true
+            spawn.CanCollide = false
+            spawn.CanTouch = false
             spawn.Transparency = 1
             spawn.Parent = spawns
         end
 
-        if index < #StageConfig.STAGES then
-            local nextData = StageConfig.STAGES[index + 1]
+        if index == 1 then
+            part("FirstJump", Vector3.new(14, 2, 14), Vector3.new(0, 10, 21),
+                Color3.fromRGB(170, 206, 151), Enum.Material.Grass, stones)
+            for i = 1, 6 do
+                part("Stone_1_" .. i, Vector3.new(14, 2, 14), Vector3.new(0, 10 + 12*i/7, 37.8 + 16.8*(i-1)),
+                    Color3.fromRGB(227, 230, 224), Enum.Material.SmoothPlastic, stones)
+            end
+            part("Rest", Vector3.new(24, 2, 24), Vector3.new(0, 22, 143.6),
+                Color3.fromRGB(170, 206, 151), Enum.Material.Grass, stones)
+            for _, zone in ipairs({{Vector3.new(0,-5,65.8),Vector3.new(40,4,171.6)}, {Vector3.new(24,-5,143.6),Vector3.new(40,4,40)}}) do
+                local recovery = part("KillBrick", zone[2], zone[1], data.color, data.material, obstacles)
+                recovery.CanCollide=false; recovery.CanTouch=true; recovery.Transparency=1
+                recovery:SetAttribute("StageSegment", 1)
+            end
+            for _, marker in ipairs({{Vector3.new(0,11.04,7),"↑", Vector3.new(0,0,1)}, {Vector3.new(0,23.04,143.6),"→ Cloud Garden", Vector3.new(1,0,0)}}) do
+                local base=part("RouteMarker",Vector3.new(3,0.05,3),marker[1],data.color,data.material,decorations)
+                base.CanCollide=false; base.CanQuery=false
+                local gui=Instance.new("BillboardGui"); gui.Size=UDim2.fromOffset(180,36); gui.MaxDistance=70; gui.Parent=base
+                local text=Instance.new("TextLabel"); text.Size=UDim2.fromScale(1,1); text.BackgroundTransparency=1
+                text.Text=marker[2]; text.Font=Enum.Font.GothamBold; text.TextSize=18; text.TextColor3=Color3.fromRGB(54,73,69); text.Parent=gui
+            end
+        elseif index < #StageConfig.ORIGINAL_STAGES then
+            local nextData = StageConfig.ORIGINAL_STAGES[index + 1]
             local count, width = data.stoneCount, data.stoneWidth
             local delta = nextData.pos - data.pos
             local horizLen = math.sqrt(delta.X^2 + delta.Z^2)
@@ -221,6 +249,20 @@ function MapBuilderService.buildIslands()
             summitKb.CanTouch = true
             summitKb.Transparency = 1
             summitKb:SetAttribute("StageSegment", data.stage)
+        end
+    end
+    -- Transform all downstream generated parts together, including rails/recovery/decor.
+    for _, folder in ipairs({map, checkpoints, obstacles}) do
+        for _, item in ipairs(folder:GetDescendants()) do
+            if item:IsA("BasePart") and (item:GetAttribute("GeometryStage") or 1) >= 2 then
+                local pos = StageConfig.transformPosition(item.Position)
+                local look = item.CFrame.LookVector
+                local dir = Vector3.new(look.X * StageConfig.DownstreamCos - look.Z * StageConfig.DownstreamSin,
+                    look.Y, look.X * StageConfig.DownstreamSin + look.Z * StageConfig.DownstreamCos)
+                item.Position = pos
+                item.CFrame = CFrame.lookAt(pos, pos + dir)
+                if item.Name == "Island_2" then item.CFrame = CFrame.new(pos) end
+            end
         end
     end
 end
